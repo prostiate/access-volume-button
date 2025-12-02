@@ -1,26 +1,28 @@
-import Slider from '@react-native-community/slider';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import {
-  Divider,
-  List,
-  Switch,
-  Text,
   IconButton,
+  List,
   Modal,
   Portal,
+  Switch,
+  useTheme,
 } from 'react-native-paper';
-import { ColorPicker } from '../src/components/ColorPicker';
-import { StyleSelector } from '../src/components/StyleSelector';
-import { MultiSliderSelector } from '../src/components/MultiSliderSelector';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { BurgerMenu } from '../src/components/BurgerMenu';
+import { ColorPicker } from '../src/components/ColorPicker';
+import { MultiSliderSelector } from '../src/components/MultiSliderSelector';
+import { PermissionBanner } from '../src/components/PermissionBanner';
+import { SectionCard } from '../src/components/SectionCard';
+import { SettingSlider } from '../src/components/SettingSlider';
+import { StyleSelector } from '../src/components/StyleSelector';
 import { AccessVolumeModule } from '../src/services/native/AccessVolumeModule';
 import { useStore } from '../src/store/useStore';
 
 export default function SettingsScreen() {
-  const router = useRouter();
+  const theme = useTheme();
   const { t } = useTranslation();
   const {
     // UI
@@ -86,7 +88,6 @@ export default function SettingsScreen() {
       const accessibility =
         await AccessVolumeModule.isAccessibilityServiceEnabled();
       setAccessibilityGranted(accessibility);
-      console.log('Permissions check:', { overlay, accessibility });
     } catch (e) {
       console.error('Error checking permissions:', e);
     }
@@ -98,7 +99,7 @@ export default function SettingsScreen() {
     return () => clearInterval(interval);
   }, []);
 
-  // Sync config with native module whenever relevant state changes
+  // Sync config with native module
   React.useEffect(() => {
     if (enabled) {
       const config = {
@@ -180,56 +181,45 @@ export default function SettingsScreen() {
         </Modal>
       </Portal>
 
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Permissions */}
-        <List.Section>
-          <List.Subheader>{t('settings.permissions')}</List.Subheader>
-          <List.Item
-            title={t('settings.overlay_permission')}
-            right={() => (
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  color: overlayGranted ? 'green' : 'red',
-                  marginRight: 16,
-                }}>
-                {overlayGranted ? 'Granted' : 'Denied'}
-              </Text>
-            )}
-            onPress={() =>
-              !overlayGranted && AccessVolumeModule.requestOverlayPermission()
+      <ScrollView
+        style={{ backgroundColor: theme.colors.background }}
+        contentContainerStyle={styles.container}>
+        {/* Permission Banners */}
+        <Animated.View entering={FadeInDown.duration(400)}>
+          <PermissionBanner
+            type="overlay"
+            granted={overlayGranted}
+            onRequestPermission={() =>
+              AccessVolumeModule.requestOverlayPermission()
             }
           />
-          <List.Item
-            title={t('settings.accessibility_permission')}
-            right={() => (
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  color: accessibilityGranted ? 'green' : 'red',
-                  marginRight: 16,
-                }}>
-                {accessibilityGranted ? 'Granted' : 'Denied'}
-              </Text>
-            )}
-            description="Required for global actions. Tap to open settings."
-            onPress={() => AccessVolumeModule.openAccessibilitySettings()}
+          <PermissionBanner
+            type="accessibility"
+            granted={accessibilityGranted}
+            onRequestPermission={() =>
+              AccessVolumeModule.openAccessibilitySettings()
+            }
           />
-        </List.Section>
-        <Divider />
+        </Animated.View>
 
         {/* General Settings */}
-        <List.Section>
-          <List.Subheader>General</List.Subheader>
+        <SectionCard
+          title="General Settings"
+          icon="cog"
+          iconColor={theme.colors.primary}
+          defaultExpanded>
           <List.Item
             title={t('settings.show_volume_buttons')}
+            description="Enable floating volume controls"
+            left={props => <List.Icon {...props} icon="volume-high" />}
             right={() => (
               <Switch value={enabled} onValueChange={toggleOverlay} />
             )}
           />
           <List.Item
-            title="Pin buttons at its position"
+            title="Pin buttons at position"
             description="Lock overlay position"
+            left={props => <List.Icon {...props} icon="pin" />}
             right={() => (
               <Switch value={pinButtons} onValueChange={setPinButtons} />
             )}
@@ -237,6 +227,7 @@ export default function SettingsScreen() {
           <List.Item
             title="Use system volume slider"
             description="Use Android's native volume UI"
+            left={props => <List.Icon {...props} icon="android" />}
             right={() => (
               <Switch
                 value={useSystemVolumeSlider}
@@ -244,151 +235,152 @@ export default function SettingsScreen() {
               />
             )}
           />
-        </List.Section>
-        <Divider />
+        </SectionCard>
 
-        {/* Style */}
-        <List.Section>
-          <List.Subheader>Style</List.Subheader>
-          <StyleSelector
-            selectedStyle={styleId}
-            onSelect={id => setStyle(id)}
-          />
-        </List.Section>
-        <Divider />
+        {/* Style Selection */}
+        <SectionCard
+          title="Visual Style"
+          icon="palette"
+          iconColor="#FF9500"
+          defaultExpanded>
+          <View style={styles.sectionContent}>
+            <StyleSelector selectedStyle={styleId} onSelect={setStyle} />
+          </View>
+        </SectionCard>
 
         {/* Accent Color */}
-        <List.Section>
-          <List.Subheader>Accent Color</List.Subheader>
-          <ColorPicker selectedColor={accentColor} onSelect={setAccentColor} />
-        </List.Section>
-        <Divider />
+        <SectionCard
+          title="Accent Color"
+          icon="format-color-fill"
+          iconColor={accentColor}
+          defaultExpanded>
+          <View style={styles.sectionContent}>
+            <ColorPicker
+              selectedColor={accentColor}
+              onSelect={setAccentColor}
+            />
+          </View>
+        </SectionCard>
 
         {/* Button Settings */}
-        <List.Section>
-          <List.Subheader>Button Settings</List.Subheader>
-          <List.Item
-            title={`Size: ${buttonSize} dp`}
-            description="Adjust button size (40-120 dp)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={40}
-            maximumValue={120}
-            step={1}
+        <SectionCard
+          title="Button Settings"
+          icon="gesture-tap-button"
+          iconColor="#FF3B30"
+          defaultExpanded={false}>
+          <SettingSlider
+            label="Button Size"
             value={buttonSize}
+            min={40}
+            max={120}
+            step={1}
+            unit="dp"
+            description="Adjust the button size"
             onValueChange={setButtonSize}
           />
-          <List.Item
-            title={`Transparency: ${(buttonTransparency * 100).toFixed(0)}%`}
-            description="Button transparency (0-80%)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={0}
-            maximumValue={0.8}
-            step={0.01}
+          <SettingSlider
+            label="Transparency"
             value={buttonTransparency}
+            min={0}
+            max={0.8}
+            step={0.01}
+            unit="%"
+            description="Button transparency level"
             onValueChange={setButtonTransparency}
+            formatValue={v => (v * 100).toFixed(0)}
           />
-          <List.Item
-            title={`Corner Radius: ${buttonCornerRadius}%`}
-            description="Button roundness (0-50%)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={0}
-            maximumValue={50}
-            step={1}
+          <SettingSlider
+            label="Corner Radius"
             value={buttonCornerRadius}
+            min={0}
+            max={50}
+            step={1}
+            unit="%"
+            description="Button roundness"
             onValueChange={setButtonCornerRadius}
           />
-          <List.Item
-            title={`Distance: ${buttonDistance} dp`}
-            description="Space between buttons (8-64 dp)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={8}
-            maximumValue={64}
-            step={1}
+          <SettingSlider
+            label="Button Distance"
             value={buttonDistance}
+            min={8}
+            max={64}
+            step={1}
+            unit="dp"
+            description="Space between buttons"
             onValueChange={setButtonDistance}
           />
-        </List.Section>
-        <Divider />
+        </SectionCard>
 
         {/* Slider Settings */}
-        <List.Section>
-          <List.Subheader>Slider Settings</List.Subheader>
-          <List.Item
-            title={`Transparency: ${(sliderTransparency * 100).toFixed(0)}%`}
-            description="Slider transparency (0-80%)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={0}
-            maximumValue={0.8}
-            step={0.01}
+        <SectionCard
+          title="Slider Settings"
+          icon="tune-vertical"
+          iconColor="#34C759"
+          defaultExpanded={false}>
+          <SettingSlider
+            label="Transparency"
             value={sliderTransparency}
+            min={0}
+            max={0.8}
+            step={0.01}
+            unit="%"
+            description="Slider transparency level"
             onValueChange={setSliderTransparency}
+            formatValue={v => (v * 100).toFixed(0)}
           />
-          <List.Item
-            title={`Height: ${sliderHeight} dp`}
-            description="Slider height (120-280 dp)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={120}
-            maximumValue={280}
-            step={10}
+          <SettingSlider
+            label="Height"
             value={sliderHeight}
+            min={120}
+            max={280}
+            step={10}
+            unit="dp"
+            description="Slider height"
             onValueChange={setSliderHeight}
           />
-          <List.Item
-            title={`Thickness: ${sliderThickness} dp`}
-            description="Slider bar thickness (4-24 dp)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={4}
-            maximumValue={24}
-            step={1}
+          <SettingSlider
+            label="Thickness"
             value={sliderThickness}
+            min={4}
+            max={24}
+            step={1}
+            unit="dp"
+            description="Slider bar thickness"
             onValueChange={setSliderThickness}
           />
-          <List.Item
-            title={`Distance: ${sliderDistance} dp`}
-            description="Space between sliders (8-40 dp)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={8}
-            maximumValue={40}
-            step={1}
+          <SettingSlider
+            label="Distance"
             value={sliderDistance}
+            min={8}
+            max={40}
+            step={1}
+            unit="dp"
+            description="Space between sliders"
             onValueChange={setSliderDistance}
           />
-          <List.Item
-            title={`Timeout: ${(sliderTimeout / 1000).toFixed(1)}s`}
-            description="Auto-hide timeout (1-10s)"
-          />
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={1000}
-            maximumValue={10000}
-            step={500}
+          <SettingSlider
+            label="Auto-hide Timeout"
             value={sliderTimeout}
+            min={1000}
+            max={10000}
+            step={500}
+            unit="s"
+            description="Time until sliders hide"
             onValueChange={setSliderTimeout}
+            formatValue={v => (v / 1000).toFixed(1)}
           />
-        </List.Section>
-        <Divider />
+        </SectionCard>
 
         {/* Power Button */}
-        <List.Section>
-          <List.Subheader>Power Button</List.Subheader>
+        <SectionCard
+          title="Power Button"
+          icon="power"
+          iconColor="#AF52DE"
+          defaultExpanded={false}>
           <List.Item
             title="Enable Power Button"
+            description="Show extra power button"
+            left={props => <List.Icon {...props} icon="power" />}
             right={() => (
               <Switch
                 value={powerButtonEnabled}
@@ -405,6 +397,7 @@ export default function SettingsScreen() {
                     ? 'Above volume buttons'
                     : 'Below volume buttons'
                 }
+                left={props => <List.Icon {...props} icon="swap-vertical" />}
                 onPress={() =>
                   setPowerButtonPosition(
                     powerButtonPosition === 'above' ? 'below' : 'above'
@@ -414,8 +407,8 @@ export default function SettingsScreen() {
               <List.Item
                 title="Action"
                 description={powerButtonAction.replace('_', ' ')}
+                left={props => <List.Icon {...props} icon="gesture-tap" />}
                 onPress={() => {
-                  // Cycle through actions
                   const actions: Array<typeof powerButtonAction> = [
                     'power_dialog',
                     'notifications',
@@ -431,12 +424,14 @@ export default function SettingsScreen() {
               />
             </>
           )}
-        </List.Section>
-        <Divider />
+        </SectionCard>
 
-        {/* Single Button - Multi Sliders */}
-        <List.Section>
-          <List.Subheader>Single Button – Multi Sliders</List.Subheader>
+        {/* Multi Sliders */}
+        <SectionCard
+          title="Multi Sliders"
+          icon="view-carousel"
+          iconColor={theme.colors.secondary}
+          defaultExpanded={false}>
           <MultiSliderSelector
             selectedSliders={visibleSliders}
             onSelectionChange={setVisibleSliders}
@@ -444,6 +439,7 @@ export default function SettingsScreen() {
           <List.Item
             title="Long-press action"
             description={longPressAction.replace('_', ' ')}
+            left={props => <List.Icon {...props} icon="gesture-tap-hold" />}
             onPress={() => {
               const actions: Array<typeof longPressAction> = [
                 'hide',
@@ -458,26 +454,18 @@ export default function SettingsScreen() {
               setLongPressAction(nextAction);
             }}
           />
-        </List.Section>
-        <Divider />
+        </SectionCard>
 
-        {/* Proximity Sensor */}
-        <List.Section>
-          <List.Subheader>Proximity Sensor</List.Subheader>
-          <List.Item
-            title="Coming in v1.0"
-            description="Proximity features not yet implemented"
-            left={props => <List.Icon {...props} icon="leak" />}
-          />
-        </List.Section>
-        <Divider />
-
-        {/* Sensitive to Keyboard */}
-        <List.Section>
-          <List.Subheader>Sensitive to Keyboard</List.Subheader>
+        {/* Keyboard Sensitivity */}
+        <SectionCard
+          title="Keyboard Sensitivity"
+          icon="keyboard"
+          iconColor={theme.colors.primary}
+          defaultExpanded={false}>
           <List.Item
             title="Move overlay when keyboard appears"
             description="Automatically adjust position"
+            left={props => <List.Icon {...props} icon="keyboard" />}
             right={() => (
               <Switch
                 value={keyboardSensitive}
@@ -485,18 +473,10 @@ export default function SettingsScreen() {
               />
             )}
           />
-        </List.Section>
-        <Divider />
+        </SectionCard>
 
-        {/* About */}
-        <List.Section>
-          <List.Subheader>About</List.Subheader>
-          <List.Item
-            title="Privacy Policy"
-            onPress={() => router.push('/privacy')}
-            right={props => <List.Icon {...props} icon="chevron-right" />}
-          />
-        </List.Section>
+        {/* Bottom Spacing */}
+        <View style={{ height: 24 }} />
       </ScrollView>
     </>
   );
@@ -505,13 +485,17 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    paddingTop: 8,
     paddingBottom: 20,
   },
   modalContent: {
     backgroundColor: 'white',
-    padding: 20,
     margin: 20,
-    borderRadius: 8,
-    maxHeight: '80%',
+    borderRadius: 16,
+    maxHeight: '90%',
+    overflow: 'hidden',
+  },
+  sectionContent: {
+    paddingVertical: 8,
   },
 });
