@@ -6,11 +6,13 @@ import { AppState } from "./types";
 export const useStore = create<AppState>()(
   persist(
     (set) => ({
-      // UI Slice
+      // UI State
       themeMode: "system",
       hasSeenOnboarding: false,
+      menuVisible: false,
       setThemeMode: (mode) => set({ themeMode: mode }),
       setHasSeenOnboarding: (seen) => set({ hasSeenOnboarding: seen }),
+      setMenuVisible: (visible) => set({ menuVisible: visible }),
 
       // Permissions Slice
       overlayGranted: false,
@@ -22,10 +24,8 @@ export const useStore = create<AppState>()(
       // Overlay Slice
       enabled: false,
       pinned: false,
-      useSystemVolumeSlider: false,
       setEnabled: (enabled) => set({ enabled }),
       setPinned: (pinned) => set({ pinned }),
-      setUseSystemVolumeSlider: (use) => set({ useSystemVolumeSlider: use }),
 
       // Style Slice
       styleId: "android",
@@ -60,13 +60,29 @@ export const useStore = create<AppState>()(
       setSliderDistance: (sliderDistance) => set({ sliderDistance }),
       setSliderTimeout: (sliderTimeout) => set({ sliderTimeout }),
 
-      // Power Button Slice
+      // Power Button Settings
       powerButtonEnabled: false,
       powerButtonPosition: "above",
-      setPowerButtonEnabled: (powerButtonEnabled) =>
-        set({ powerButtonEnabled }),
-      setPowerButtonPosition: (powerButtonPosition) =>
-        set({ powerButtonPosition }),
+      powerButtonAction: "power_dialog",
+      setPowerButtonEnabled: (enabled) => set({ powerButtonEnabled: enabled }),
+      setPowerButtonPosition: (position) =>
+        set({ powerButtonPosition: position }),
+      setPowerButtonAction: (action) => set({ powerButtonAction: action }),
+
+      // Single Button - Multi Sliders
+      visibleSliders: ["media", "ring", "notification"],
+      longPressAction: "hide",
+      setVisibleSliders: (sliders) => set({ visibleSliders: sliders }),
+      setLongPressAction: (action) => set({ longPressAction: action }),
+
+      // Additional Settings
+      pinButtons: false,
+      useSystemVolumeSlider: false,
+      keyboardSensitive: false,
+      setPinButtons: (pin) => set({ pinButtons: pin }),
+      setUseSystemVolumeSlider: (use) => set({ useSystemVolumeSlider: use }),
+      setKeyboardSensitive: (sensitive) =>
+        set({ keyboardSensitive: sensitive }),
     }),
     {
       name: "access-volume-storage",

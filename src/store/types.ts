@@ -1,10 +1,14 @@
+// UI State
 export interface UIState {
-  themeMode: "system" | "light" | "dark";
+  themeMode: "light" | "dark" | "system";
   hasSeenOnboarding: boolean;
-  setThemeMode: (mode: "system" | "light" | "dark") => void;
+  menuVisible: boolean;
+  setThemeMode: (mode: "light" | "dark" | "system") => void;
   setHasSeenOnboarding: (seen: boolean) => void;
+  setMenuVisible: (visible: boolean) => void;
 }
 
+// Permissions State
 export interface PermissionsState {
   overlayGranted: boolean;
   accessibilityGranted: boolean;
@@ -12,15 +16,15 @@ export interface PermissionsState {
   setAccessibilityGranted: (granted: boolean) => void;
 }
 
+// Overlay State
 export interface OverlayState {
   enabled: boolean;
   pinned: boolean;
-  useSystemVolumeSlider: boolean;
   setEnabled: (enabled: boolean) => void;
   setPinned: (pinned: boolean) => void;
-  setUseSystemVolumeSlider: (use: boolean) => void;
 }
 
+// Style State
 export interface StyleState {
   styleId: "android" | "android12" | "rgb" | "cards";
   accentColor: string;
@@ -30,6 +34,7 @@ export interface StyleState {
   setBackgroundColor: (color: string) => void;
 }
 
+// Button Settings State
 export interface ButtonSettingsState {
   buttonTransparency: number;
   buttonSize: number;
@@ -41,6 +46,7 @@ export interface ButtonSettingsState {
   setButtonDistance: (value: number) => void;
 }
 
+// Slider Settings State
 export interface SliderSettingsState {
   sliderTransparency: number;
   sliderHeight: number;
@@ -54,19 +60,60 @@ export interface SliderSettingsState {
   setSliderTimeout: (value: number) => void;
 }
 
+// Power Button State
 export interface PowerButtonState {
   powerButtonEnabled: boolean;
   powerButtonPosition: "above" | "below";
-  setPowerButtonEnabled: (value: boolean) => void;
-  setPowerButtonPosition: (value: "above" | "below") => void;
+  powerButtonAction:
+    | "power_dialog"
+    | "notifications"
+    | "screenshot"
+    | "screen_off"
+    | "none";
+  setPowerButtonEnabled: (enabled: boolean) => void;
+  setPowerButtonPosition: (position: "above" | "below") => void;
+  setPowerButtonAction: (action: PowerButtonState["powerButtonAction"]) => void;
 }
 
-// Combine all slices
-export interface AppState
-  extends UIState,
-    PermissionsState,
-    OverlayState,
-    StyleState,
-    ButtonSettingsState,
-    SliderSettingsState,
-    PowerButtonState {}
+// Slider Configuration
+export interface SliderConfig {
+  id: "media" | "ring" | "notification" | "call" | "brightness" | "darkness";
+  enabled: boolean;
+  label: string;
+  icon: string;
+}
+
+// Single Button - Multi Sliders State
+export interface SingleButtonState {
+  visibleSliders: string[];
+  longPressAction:
+    | "hide"
+    | "screen_off"
+    | "notifications"
+    | "mute"
+    | "screenshot"
+    | "none";
+  setVisibleSliders: (sliders: string[]) => void;
+  setLongPressAction: (action: SingleButtonState["longPressAction"]) => void;
+}
+
+// Additional Settings
+export interface AdditionalSettingsState {
+  pinButtons: boolean;
+  useSystemVolumeSlider: boolean;
+  keyboardSensitive: boolean;
+  setPinButtons: (pin: boolean) => void;
+  setUseSystemVolumeSlider: (use: boolean) => void;
+  setKeyboardSensitive: (sensitive: boolean) => void;
+}
+
+// Combined App State
+export type AppState = UIState &
+  PermissionsState &
+  OverlayState &
+  StyleState &
+  ButtonSettingsState &
+  SliderSettingsState &
+  PowerButtonState &
+  SingleButtonState &
+  AdditionalSettingsState;
