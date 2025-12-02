@@ -1,0 +1,19 @@
+{
+  "translation": {
+    "settings": {
+      "title": "Pengaturan",
+      "permissions": "Izin",
+      "overlay_permission": "Izin Overlay",
+      "accessibility_permission": "Izin Aksesibilitas",
+      "show_volume_buttons": "Tampilkan Tombol Volume",
+      "style": "Gaya",
+      "colors": "Warna"
+    },
+    "common": {
+      "on": "Hidup",
+      "off": "Mati",
+      "cancel": "Batal",
+      "ok": "OK"
+    }
+  }
+}

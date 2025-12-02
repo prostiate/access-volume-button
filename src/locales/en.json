@@ -1,0 +1,19 @@
+{
+  "translation": {
+    "settings": {
+      "title": "Settings",
+      "permissions": "Permissions",
+      "overlay_permission": "Overlay Permission",
+      "accessibility_permission": "Accessibility Permission",
+      "show_volume_buttons": "Show Volume Buttons",
+      "style": "Style",
+      "colors": "Colors"
+    },
+    "common": {
+      "on": "On",
+      "off": "Off",
+      "cancel": "Cancel",
+      "ok": "OK"
+    }
+  }
+}
