@@ -2,7 +2,7 @@ import { Stack, useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet } from "react-native";
-import { Appbar, Divider, List, Menu, Switch, Text } from "react-native-paper";
+import { Divider, List, Switch, Text } from "react-native-paper";
 import { AccessVolumeModule } from "../src/services/native/AccessVolumeModule";
 import { useStore } from "../src/store/useStore";
 
@@ -18,8 +18,6 @@ export default function SettingsScreen() {
     setAccessibilityGranted,
   } = useStore();
 
-  const [menuVisible, setMenuVisible] = React.useState(false);
-
   const checkPermissions = async () => {
     try {
       const overlay = await AccessVolumeModule.checkOverlayPermission();
@@ -27,8 +25,9 @@ export default function SettingsScreen() {
       const accessibility =
         await AccessVolumeModule.isAccessibilityServiceEnabled();
       setAccessibilityGranted(accessibility);
+      console.log("Permissions check:", { overlay, accessibility });
     } catch (e) {
-      console.error(e);
+      console.error("Error checking permissions:", e);
     }
   };
 
@@ -46,6 +45,7 @@ export default function SettingsScreen() {
         return;
       }
       AccessVolumeModule.startOverlay();
+    } else {
       AccessVolumeModule.stopOverlay();
     }
   };
@@ -55,26 +55,6 @@ export default function SettingsScreen() {
       <Stack.Screen
         options={{
           title: t("settings.title"),
-          headerLeft: () => (
-            <Menu
-              visible={menuVisible}
-              onDismiss={() => setMenuVisible(false)}
-              anchor={
-                <Appbar.Action
-                  icon="menu"
-                  onPress={() => setMenuVisible(true)}
-                />
-              }
-            >
-              <Menu.Item
-                onPress={() => {
-                  setMenuVisible(false);
-                  router.push("/privacy");
-                }}
-                title="Privacy Policy"
-              />
-            </Menu>
-          ),
         }}
       />
       <ScrollView contentContainerStyle={styles.container}>
@@ -87,6 +67,7 @@ export default function SettingsScreen() {
                 style={{
                   alignSelf: "center",
                   color: overlayGranted ? "green" : "red",
+                  marginRight: 16,
                 }}
               >
                 {overlayGranted ? "Granted" : "Denied"}
@@ -103,12 +84,14 @@ export default function SettingsScreen() {
                 style={{
                   alignSelf: "center",
                   color: accessibilityGranted ? "green" : "red",
+                  marginRight: 16,
                 }}
               >
                 {accessibilityGranted ? "Granted" : "Denied"}
               </Text>
             )}
-            description="Required for global actions"
+            description="Required for global actions. Tap to open settings."
+            onPress={() => AccessVolumeModule.openAccessibilitySettings()}
           />
         </List.Section>
         <Divider />
@@ -119,6 +102,15 @@ export default function SettingsScreen() {
             right={() => (
               <Switch value={enabled} onValueChange={toggleOverlay} />
             )}
+          />
+        </List.Section>
+        <Divider />
+        <List.Section>
+          <List.Subheader>About</List.Subheader>
+          <List.Item
+            title="Privacy Policy"
+            onPress={() => router.push("/privacy")}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
           />
         </List.Section>
       </ScrollView>

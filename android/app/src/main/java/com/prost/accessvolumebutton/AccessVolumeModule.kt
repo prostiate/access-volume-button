@@ -8,6 +8,7 @@ import android.content.Intent
 import android.provider.Settings
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 
 class AccessVolumeModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -17,28 +18,42 @@ class AccessVolumeModule(reactContext: ReactApplicationContext) : ReactContextBa
 
     @ReactMethod
     fun startOverlay() {
-        val intent = Intent(reactApplicationContext, OverlayService::class.java)
-        intent.action = "START"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            reactApplicationContext.startForegroundService(intent)
-        } else {
-            reactApplicationContext.startService(intent)
+        Log.d("AccessVolume", "Starting Overlay Service")
+        try {
+            val intent = Intent(reactApplicationContext, OverlayService::class.java)
+            intent.action = "START"
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                reactApplicationContext.startForegroundService(intent)
+            } else {
+                reactApplicationContext.startService(intent)
+            }
+        } catch (e: Exception) {
+            Log.e("AccessVolume", "Error starting overlay", e)
         }
     }
 
     @ReactMethod
     fun stopOverlay() {
-        val intent = Intent(reactApplicationContext, OverlayService::class.java)
-        intent.action = "STOP"
-        reactApplicationContext.startService(intent)
+        Log.d("AccessVolume", "Stopping Overlay Service")
+        try {
+            val intent = Intent(reactApplicationContext, OverlayService::class.java)
+            intent.action = "STOP"
+            reactApplicationContext.startService(intent)
+        } catch (e: Exception) {
+             Log.e("AccessVolume", "Error stopping overlay", e)
+        }
     }
 
     @ReactMethod
     fun checkOverlayPermission(promise: Promise) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            promise.resolve(Settings.canDrawOverlays(reactApplicationContext))
-        } else {
-            promise.resolve(true)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                promise.resolve(Settings.canDrawOverlays(reactApplicationContext))
+            } else {
+                promise.resolve(true)
+            }
+        } catch (e: Exception) {
+            promise.reject("ERROR", e)
         }
     }
 
@@ -49,6 +64,13 @@ class AccessVolumeModule(reactContext: ReactApplicationContext) : ReactContextBa
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             reactApplicationContext.startActivity(intent)
         }
+    }
+    
+    @ReactMethod
+    fun openAccessibilitySettings() {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        reactApplicationContext.startActivity(intent)
     }
     
     @ReactMethod
@@ -64,6 +86,8 @@ class AccessVolumeModule(reactContext: ReactApplicationContext) : ReactContextBa
     
     @ReactMethod
     fun isAccessibilityServiceEnabled(promise: Promise) {
+         // This only checks if our service instance is alive (connected)
+         // A better check would be to query AccessibilityManager, but this is a good proxy for "ready to use"
          promise.resolve(AccessVolumeAccessibilityService.instance != null)
     }
 }

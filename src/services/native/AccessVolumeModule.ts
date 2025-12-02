@@ -7,6 +7,7 @@ interface AccessVolumeInterface {
   stopOverlay(): void;
   checkOverlayPermission(): Promise<boolean>;
   requestOverlayPermission(): void;
+  openAccessibilitySettings(): void;
   performGlobalAction(action: number): Promise<boolean>;
   isAccessibilityServiceEnabled(): Promise<boolean>;
 }
