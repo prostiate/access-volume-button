@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+android/build/
+android/app/build/
+ios/build/
+
+# Generated files
+*.lock
+package-lock.json
+yarn.lock
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+coverage/
+.DS_Store
