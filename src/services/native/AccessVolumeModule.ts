@@ -10,6 +10,7 @@ interface AccessVolumeInterface {
   openAccessibilitySettings(): void;
   performGlobalAction(action: number): Promise<boolean>;
   isAccessibilityServiceEnabled(): Promise<boolean>;
+  updateConfig(config: string): void;
 }
 
 export const AccessVolumeModule = AccessVolume as AccessVolumeInterface;

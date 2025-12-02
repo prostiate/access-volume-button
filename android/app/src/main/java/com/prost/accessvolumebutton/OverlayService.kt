@@ -56,17 +56,47 @@ class OverlayService : Service() {
             showOverlay()
         } else if (intent?.action == "STOP") {
             stopSelf()
+        } else if (intent?.action == "UPDATE_CONFIG") {
+            val configJson = intent.getStringExtra("config")
+            if (configJson != null) {
+                updateOverlayConfig(configJson)
+            }
         }
         return START_STICKY
     }
 
-    private fun showOverlay() {
-        Log.d(TAG, "showOverlay called")
-        if (overlayView != null) {
-            Log.d(TAG, "Overlay already exists")
-            return
+    private fun updateOverlayConfig(configJson: String) {
+        Log.d(TAG, "Updating overlay config: $configJson")
+        try {
+            val jsonObject = org.json.JSONObject(configJson)
+            // Parse config
+            val styleId = jsonObject.optString("styleId", "android")
+            val accentColor = jsonObject.optString("accentColor", "#2196F3")
+            val backgroundColor = jsonObject.optString("backgroundColor", "#FFFFFF")
+            val buttonSize = jsonObject.optInt("buttonSize", 70)
+            val buttonTransparency = jsonObject.optDouble("buttonTransparency", 0.0).toFloat()
+            val sliderHeight = jsonObject.optInt("sliderHeight", 216)
+            val powerButtonEnabled = jsonObject.optBoolean("powerButtonEnabled", false)
+            val powerButtonPosition = jsonObject.optString("powerButtonPosition", "above")
+            
+            // Re-create overlay with new config
+            if (overlayView != null) {
+                windowManager?.removeView(overlayView)
+                overlayView = null
+            }
+            createOverlayView(styleId, accentColor, backgroundColor, buttonSize, buttonTransparency, sliderHeight, powerButtonEnabled, powerButtonPosition)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing config", e)
         }
+    }
 
+    private fun showOverlay() {
+        if (overlayView != null) return
+        // Default config if starting without update
+        createOverlayView("android", "#2196F3", "#FFFFFF", 70, 0f, 216, false, "above")
+    }
+
+    private fun createOverlayView(styleId: String, accentColor: String, backgroundColor: String, buttonSize: Int, transparency: Float, sliderHeight: Int, powerButtonEnabled: Boolean, powerButtonPosition: String) {
         try {
             val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -83,34 +113,71 @@ class OverlayService : Service() {
             params.x = 0
             params.y = 100
 
-            // Create a simple layout with buttons
             val layout = LinearLayout(this)
             layout.orientation = LinearLayout.VERTICAL
-            layout.setBackgroundColor(0x88000000.toInt()) // Semi-transparent black
-            layout.setPadding(16, 16, 16, 16)
+            layout.setBackgroundColor(0x00000000)
+            layout.setPadding(0, 0, 0, 0)
 
+            // Convert dp to px
+            val density = resources.displayMetrics.density
+            val sizePx = (buttonSize * density).toInt()
+            val marginPx = (10 * density).toInt()
+
+            val btnParams = LinearLayout.LayoutParams(sizePx, sizePx)
+            btnParams.setMargins(0, 0, 0, marginPx)
+
+            // Power Button (if enabled and positioned above)
+            if (powerButtonEnabled && powerButtonPosition == "above") {
+                val btnPower = Button(this)
+                btnPower.text = "⏻"
+                btnPower.setTextColor(android.graphics.Color.WHITE)
+                btnPower.background = createButtonDrawable(styleId, "#FF5722", transparency)
+                btnPower.setOnClickListener {
+                    // Power button action - could show power menu or lock screen
+                    Log.d(TAG, "Power button clicked")
+                }
+                layout.addView(btnPower, btnParams)
+            }
+
+            // Volume Up Button
             val btnUp = Button(this)
             btnUp.text = "+"
+            btnUp.setTextColor(android.graphics.Color.WHITE)
+            btnUp.background = createButtonDrawable(styleId, accentColor, transparency)
             btnUp.setOnClickListener {
-                Log.d(TAG, "Volume Up clicked")
                 val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
                 audioManager.adjustVolume(android.media.AudioManager.ADJUST_RAISE, android.media.AudioManager.FLAG_SHOW_UI)
             }
 
+            // Volume Down Button
             val btnDown = Button(this)
             btnDown.text = "-"
+            btnDown.setTextColor(android.graphics.Color.WHITE)
+            btnDown.background = createButtonDrawable(styleId, accentColor, transparency)
             btnDown.setOnClickListener {
-                Log.d(TAG, "Volume Down clicked")
                 val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
                 audioManager.adjustVolume(android.media.AudioManager.ADJUST_LOWER, android.media.AudioManager.FLAG_SHOW_UI)
             }
 
-            layout.addView(btnUp)
-            layout.addView(btnDown)
+            layout.addView(btnUp, btnParams)
+            layout.addView(btnDown, btnParams)
+
+            // Power Button (if enabled and positioned below)
+            if (powerButtonEnabled && powerButtonPosition == "below") {
+                val btnPower = Button(this)
+                btnPower.text = "⏻"
+                btnPower.setTextColor(android.graphics.Color.WHITE)
+                btnPower.background = createButtonDrawable(styleId, "#FF5722", transparency)
+                btnPower.setOnClickListener {
+                    // Power button action
+                    Log.d(TAG, "Power button clicked")
+                }
+                layout.addView(btnPower, btnParams)
+            }
 
             overlayView = layout
             
-            // Add drag listener
+            // Drag logic
             layout.setOnTouchListener(object : View.OnTouchListener {
                 private var initialX = 0
                 private var initialY = 0
@@ -118,7 +185,7 @@ class OverlayService : Service() {
                 private var initialTouchY = 0f
 
                 override fun onTouch(v: View, event: MotionEvent): Boolean {
-                    when (event.action) {
+                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
                             initialX = params.x
                             initialY = params.y
@@ -137,12 +204,33 @@ class OverlayService : Service() {
                 }
             })
 
-            Log.d(TAG, "Adding view to WindowManager")
             windowManager?.addView(overlayView, params)
-            Log.d(TAG, "View added successfully")
         } catch (e: Exception) {
-            Log.e(TAG, "Error showing overlay", e)
+            Log.e(TAG, "Error creating overlay view", e)
         }
+    }
+
+    private fun createButtonDrawable(styleId: String, colorStr: String, transparency: Float): android.graphics.drawable.Drawable {
+        val color = android.graphics.Color.parseColor(colorStr)
+        // Apply transparency
+        val alpha = ((1 - transparency) * 255).toInt()
+        val colorWithAlpha = androidx.core.graphics.ColorUtils.setAlphaComponent(color, alpha)
+        
+        val drawable = android.graphics.drawable.GradientDrawable()
+        drawable.setColor(colorWithAlpha)
+        
+        if (styleId == "android12" || styleId == "rgb") {
+             drawable.shape = android.graphics.drawable.GradientDrawable.OVAL
+        } else {
+             drawable.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+             drawable.cornerRadius = 20f
+        }
+        
+        if (styleId == "rgb") {
+            drawable.setStroke(5, android.graphics.Color.CYAN) // Neon effect
+        }
+        
+        return drawable
     }
 
     override fun onDestroy() {

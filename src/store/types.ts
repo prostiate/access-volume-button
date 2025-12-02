@@ -14,26 +14,51 @@ export interface PermissionsState {
 
 export interface OverlayState {
   enabled: boolean;
-  styleId: string;
   pinned: boolean;
   useSystemVolumeSlider: boolean;
   setEnabled: (enabled: boolean) => void;
-  setStyleId: (id: string) => void;
   setPinned: (pinned: boolean) => void;
   setUseSystemVolumeSlider: (use: boolean) => void;
 }
 
+export interface StyleState {
+  styleId: "android" | "android12" | "rgb" | "cards";
+  accentColor: string;
+  backgroundColor: string;
+  setStyle: (styleId: StyleState["styleId"]) => void;
+  setAccentColor: (color: string) => void;
+  setBackgroundColor: (color: string) => void;
+}
+
 export interface ButtonSettingsState {
-  transparency: number;
-  size: number;
-  cornerRadius: number;
-  distance: number;
-  hiddenPercent: number;
-  longPressDelay: number;
-  repeatInterval: number;
-  updateButtonSettings: (
-    settings: Partial<Omit<ButtonSettingsState, "updateButtonSettings">>
-  ) => void;
+  buttonTransparency: number;
+  buttonSize: number;
+  buttonCornerRadius: number;
+  buttonDistance: number;
+  setButtonTransparency: (value: number) => void;
+  setButtonSize: (value: number) => void;
+  setButtonCornerRadius: (value: number) => void;
+  setButtonDistance: (value: number) => void;
+}
+
+export interface SliderSettingsState {
+  sliderTransparency: number;
+  sliderHeight: number;
+  sliderThickness: number;
+  sliderDistance: number;
+  sliderTimeout: number;
+  setSliderTransparency: (value: number) => void;
+  setSliderHeight: (value: number) => void;
+  setSliderThickness: (value: number) => void;
+  setSliderDistance: (value: number) => void;
+  setSliderTimeout: (value: number) => void;
+}
+
+export interface PowerButtonState {
+  powerButtonEnabled: boolean;
+  powerButtonPosition: "above" | "below";
+  setPowerButtonEnabled: (value: boolean) => void;
+  setPowerButtonPosition: (value: "above" | "below") => void;
 }
 
 // Combine all slices
@@ -41,4 +66,7 @@ export interface AppState
   extends UIState,
     PermissionsState,
     OverlayState,
-    ButtonSettingsState {}
+    StyleState,
+    ButtonSettingsState,
+    SliderSettingsState,
+    PowerButtonState {}

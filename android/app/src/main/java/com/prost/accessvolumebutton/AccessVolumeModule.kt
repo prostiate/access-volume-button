@@ -90,4 +90,13 @@ class AccessVolumeModule(reactContext: ReactApplicationContext) : ReactContextBa
          // A better check would be to query AccessibilityManager, but this is a good proxy for "ready to use"
          promise.resolve(AccessVolumeAccessibilityService.instance != null)
     }
+
+    @ReactMethod
+    fun updateConfig(configJson: String) {
+        Log.d("AccessVolume", "Updating config: $configJson")
+        val intent = Intent(reactApplicationContext, OverlayService::class.java)
+        intent.action = "UPDATE_CONFIG"
+        intent.putExtra("config", configJson)
+        reactApplicationContext.startService(intent)
+    }
 }

@@ -21,24 +21,52 @@ export const useStore = create<AppState>()(
 
       // Overlay Slice
       enabled: false,
-      styleId: "android",
       pinned: false,
       useSystemVolumeSlider: false,
       setEnabled: (enabled) => set({ enabled }),
-      setStyleId: (styleId) => set({ styleId }),
       setPinned: (pinned) => set({ pinned }),
       setUseSystemVolumeSlider: (use) => set({ useSystemVolumeSlider: use }),
 
+      // Style Slice
+      styleId: "android",
+      accentColor: "#2196F3",
+      backgroundColor: "#FFFFFF",
+      setStyle: (styleId) => set({ styleId }),
+      setAccentColor: (accentColor) => set({ accentColor }),
+      setBackgroundColor: (backgroundColor) => set({ backgroundColor }),
+
       // Button Settings Slice
-      transparency: 0,
-      size: 70,
-      cornerRadius: 50,
-      distance: 24,
-      hiddenPercent: 20,
-      longPressDelay: 0.4,
-      repeatInterval: 0.1,
-      updateButtonSettings: (settings) =>
-        set((state) => ({ ...state, ...settings })),
+      buttonTransparency: 0,
+      buttonSize: 70,
+      buttonCornerRadius: 50,
+      buttonDistance: 24,
+      setButtonTransparency: (buttonTransparency) =>
+        set({ buttonTransparency }),
+      setButtonSize: (buttonSize) => set({ buttonSize }),
+      setButtonCornerRadius: (buttonCornerRadius) =>
+        set({ buttonCornerRadius }),
+      setButtonDistance: (buttonDistance) => set({ buttonDistance }),
+
+      // Slider Settings Slice
+      sliderTransparency: 0,
+      sliderHeight: 216,
+      sliderThickness: 12,
+      sliderDistance: 18,
+      sliderTimeout: 3500,
+      setSliderTransparency: (sliderTransparency) =>
+        set({ sliderTransparency }),
+      setSliderHeight: (sliderHeight) => set({ sliderHeight }),
+      setSliderThickness: (sliderThickness) => set({ sliderThickness }),
+      setSliderDistance: (sliderDistance) => set({ sliderDistance }),
+      setSliderTimeout: (sliderTimeout) => set({ sliderTimeout }),
+
+      // Power Button Slice
+      powerButtonEnabled: false,
+      powerButtonPosition: "above",
+      setPowerButtonEnabled: (powerButtonEnabled) =>
+        set({ powerButtonEnabled }),
+      setPowerButtonPosition: (powerButtonPosition) =>
+        set({ powerButtonPosition }),
     }),
     {
       name: "access-volume-storage",
