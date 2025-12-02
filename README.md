@@ -33,6 +33,7 @@
 ## ✨ Features
 
 ### Volume & Control Management
+
 - Floating overlay with customizable + / - buttons
 - Multiple sliders: Media, Ring, Notification, Call volume
 - Brightness and screen dimming controls
@@ -41,12 +42,14 @@
 - System volume slider integration
 
 ### Customization Options
+
 - **4 Visual Styles**: Android (classic), Android 12 (modern pill), RGB (neon), Cards (material)
 - **Button Settings**: Transparency, size, corner radius, spacing, hidden percentage
 - **Slider Settings**: Height, thickness, distance, animation (fade/none), progress display
 - **Color Theming**: Light, Dark, and System auto-switch
 
 ### Advanced Features
+
 - **Power Button Actions**: Open power dialog, notifications, take screenshot
 - **Single Button Mode**: Access multiple sliders from one button
 - **Proximity Sensor**: Screen on/off based on phone position
@@ -68,6 +71,7 @@
    - **Accessibility Service** (for global actions)
 
 ### Minimum Requirements
+
 - Android 10 (API 29) or higher
 - ~20 MB storage space
 
@@ -94,6 +98,7 @@
 ### Setup Instructions
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/prostiate/access-volume-button.git
    cd access-volume-button
@@ -101,11 +106,13 @@
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start Metro bundler**
+
    ```bash
    npm start
    ```
@@ -156,14 +163,17 @@ access-volume-button/
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```bash
 npm test
 ```
 
 ### Manual Testing
+
 Primary test device: **Xiaomi Redmi Note 8 Pro** (Android 11, MIUI 12.5.6)
 
 Test checklist:
+
 - [ ] First-run permission flow
 - [ ] Overlay visibility and dragging
 - [ ] All 4 styles rendering
@@ -189,7 +199,9 @@ Contributions are welcome! Please follow these guidelines:
 5. Open a Pull Request to `main` branch
 
 ### Commit Convention
+
 We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
 - `feat:` - New features
 - `fix:` - Bug fixes
 - `docs:` - Documentation changes
@@ -199,6 +211,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 - `chore:` - Build/tooling changes
 
 ### Code Quality
+
 - Run `npm run lint` before committing
 - Run `npm run format` to auto-format code
 - Write unit tests for new features
@@ -215,6 +228,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 🔒 Privacy Policy
 
 Access Volume Button respects your privacy:
+
 - ✅ **No data collection** - Zero personal information gathered
 - ✅ **Local storage only** - All settings stored on your device
 - ✅ **No network access** - Completely offline operation
@@ -222,6 +236,7 @@ Access Volume Button respects your privacy:
 - ✅ **Open source** - Transparent codebase
 
 Permissions explained:
+
 - **Draw over other apps** - Required to display floating overlay
 - **Accessibility Service** - Used for global actions (power menu, notifications, screen on/off)
 
@@ -230,6 +245,7 @@ Permissions explained:
 ## 📞 Support
 
 Having issues? Here's how to get help:
+
 - 🐛 [Report bugs](https://github.com/prostiate/access-volume-button/issues)
 - 💡 [Request features](https://github.com/prostiate/access-volume-button/issues)
 - 📖 [Read documentation](./docs/)

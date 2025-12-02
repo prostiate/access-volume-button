@@ -1,12 +1,12 @@
-import { Stack } from "expo-router";
-import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
-import { Surface, Text } from "react-native-paper";
+import { Stack } from 'expo-router';
+import React from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
+import { Surface, Text } from 'react-native-paper';
 
 export default function PrivacyPolicyScreen() {
   return (
     <>
-      <Stack.Screen options={{ title: "Privacy Policy" }} />
+      <Stack.Screen options={{ title: 'Privacy Policy' }} />
       <ScrollView contentContainerStyle={styles.container}>
         <Surface style={styles.surface} elevation={1}>
           <Text variant="headlineMedium" style={styles.title}>
@@ -47,12 +47,12 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   sectionTitle: {
     marginTop: 16,
     marginBottom: 8,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   paragraph: {
     marginBottom: 8,

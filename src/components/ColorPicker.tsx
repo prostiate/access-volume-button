@@ -1,15 +1,15 @@
-import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import React from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 const COLORS = [
-  "#2196F3", // Blue
-  "#F44336", // Red
-  "#4CAF50", // Green
-  "#FFEB3B", // Yellow
-  "#9C27B0", // Purple
-  "#FF9800", // Orange
-  "#000000", // Black
-  "#FFFFFF", // White
+  '#2196F3', // Blue
+  '#F44336', // Red
+  '#4CAF50', // Green
+  '#FFEB3B', // Yellow
+  '#9C27B0', // Purple
+  '#FF9800', // Orange
+  '#000000', // Black
+  '#FFFFFF', // White
 ];
 
 interface Props {
@@ -22,16 +22,15 @@ export const ColorPicker = ({ selectedColor, onSelect }: Props) => {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.container}
-    >
-      {COLORS.map((color) => (
+      contentContainerStyle={styles.container}>
+      {COLORS.map(color => (
         <TouchableOpacity key={color} onPress={() => onSelect(color)}>
           <View
             style={[
               styles.circle,
               {
                 backgroundColor: color,
-                borderColor: selectedColor === color ? "#000" : "#ddd",
+                borderColor: selectedColor === color ? '#000' : '#ddd',
                 borderWidth: selectedColor === color ? 3 : 1,
               },
             ]}

@@ -13,12 +13,12 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-non-null-assertion': 'warn',
-    
+
     // React rules
     'react/react-in-jsx-scope': 'off',
     'react-native/no-inline-styles': 'warn',
     'react-hooks/exhaustive-deps': 'warn',
-    
+
     // General rules
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'prefer-const': 'error',

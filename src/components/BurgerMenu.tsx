@@ -1,8 +1,8 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import { Avatar, Divider, Drawer, RadioButton, Text } from "react-native-paper";
-import { useStore } from "../store/useStore";
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Avatar, Divider, Drawer, RadioButton, Text } from 'react-native-paper';
+import { useStore } from '../store/useStore';
 
 export function BurgerMenu() {
   const router = useRouter();
@@ -26,11 +26,10 @@ export function BurgerMenu() {
       {/* Theme Section */}
       <Drawer.Section title="Theme">
         <RadioButton.Group
-          onValueChange={(value) =>
-            setThemeMode(value as "light" | "dark" | "system")
+          onValueChange={value =>
+            setThemeMode(value as 'light' | 'dark' | 'system')
           }
-          value={themeMode}
-        >
+          value={themeMode}>
           <View style={styles.radioItem}>
             <RadioButton.Item label="Light" value="light" />
           </View>
@@ -52,7 +51,7 @@ export function BurgerMenu() {
           icon="shield-account"
           onPress={() => {
             setMenuVisible(false);
-            router.push("/privacy");
+            router.push('/privacy');
           }}
         />
       </Drawer.Section>
@@ -65,15 +64,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    alignItems: "center",
+    alignItems: 'center',
     padding: 24,
   },
   icon: {
-    backgroundColor: "#2196F3",
+    backgroundColor: '#2196F3',
     marginBottom: 12,
   },
   appName: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 4,
   },
   version: {

@@ -2,10 +2,10 @@ import {
   MD3DarkTheme,
   MD3LightTheme,
   configureFonts,
-} from "react-native-paper";
+} from 'react-native-paper';
 
 const fontConfig = {
-  fontFamily: "System",
+  fontFamily: 'System',
 };
 
 export const LightTheme = {
@@ -13,8 +13,8 @@ export const LightTheme = {
   fonts: configureFonts({ config: fontConfig }),
   colors: {
     ...MD3LightTheme.colors,
-    primary: "#007AFF",
-    secondary: "#5856D6",
+    primary: '#007AFF',
+    secondary: '#5856D6',
   },
 };
 
@@ -23,7 +23,7 @@ export const DarkTheme = {
   fonts: configureFonts({ config: fontConfig }),
   colors: {
     ...MD3DarkTheme.colors,
-    primary: "#0A84FF",
-    secondary: "#5E5CE6",
+    primary: '#0A84FF',
+    secondary: '#5E5CE6',
   },
 };

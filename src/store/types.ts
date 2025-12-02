@@ -1,9 +1,9 @@
 // UI State
 export interface UIState {
-  themeMode: "light" | "dark" | "system";
+  themeMode: 'light' | 'dark' | 'system';
   hasSeenOnboarding: boolean;
   menuVisible: boolean;
-  setThemeMode: (mode: "light" | "dark" | "system") => void;
+  setThemeMode: (mode: 'light' | 'dark' | 'system') => void;
   setHasSeenOnboarding: (seen: boolean) => void;
   setMenuVisible: (visible: boolean) => void;
 }
@@ -26,10 +26,10 @@ export interface OverlayState {
 
 // Style State
 export interface StyleState {
-  styleId: "android" | "android12" | "rgb" | "cards";
+  styleId: 'android' | 'android12' | 'rgb' | 'cards';
   accentColor: string;
   backgroundColor: string;
-  setStyle: (styleId: StyleState["styleId"]) => void;
+  setStyle: (styleId: StyleState['styleId']) => void;
   setAccentColor: (color: string) => void;
   setBackgroundColor: (color: string) => void;
 }
@@ -63,21 +63,21 @@ export interface SliderSettingsState {
 // Power Button State
 export interface PowerButtonState {
   powerButtonEnabled: boolean;
-  powerButtonPosition: "above" | "below";
+  powerButtonPosition: 'above' | 'below';
   powerButtonAction:
-    | "power_dialog"
-    | "notifications"
-    | "screenshot"
-    | "screen_off"
-    | "none";
+    | 'power_dialog'
+    | 'notifications'
+    | 'screenshot'
+    | 'screen_off'
+    | 'none';
   setPowerButtonEnabled: (enabled: boolean) => void;
-  setPowerButtonPosition: (position: "above" | "below") => void;
-  setPowerButtonAction: (action: PowerButtonState["powerButtonAction"]) => void;
+  setPowerButtonPosition: (position: 'above' | 'below') => void;
+  setPowerButtonAction: (action: PowerButtonState['powerButtonAction']) => void;
 }
 
 // Slider Configuration
 export interface SliderConfig {
-  id: "media" | "ring" | "notification" | "call" | "brightness" | "darkness";
+  id: 'media' | 'ring' | 'notification' | 'call' | 'brightness' | 'darkness';
   enabled: boolean;
   label: string;
   icon: string;
@@ -87,14 +87,14 @@ export interface SliderConfig {
 export interface SingleButtonState {
   visibleSliders: string[];
   longPressAction:
-    | "hide"
-    | "screen_off"
-    | "notifications"
-    | "mute"
-    | "screenshot"
-    | "none";
+    | 'hide'
+    | 'screen_off'
+    | 'notifications'
+    | 'mute'
+    | 'screenshot'
+    | 'none';
   setVisibleSliders: (sliders: string[]) => void;
-  setLongPressAction: (action: SingleButtonState["longPressAction"]) => void;
+  setLongPressAction: (action: SingleButtonState['longPressAction']) => void;
 }
 
 // Additional Settings
